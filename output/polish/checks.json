@@ -1,0 +1,89 @@
+{
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 7473,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "height": 7473,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "height": 9107,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "height": 12736,
+      "overflow": false
+    }
+  ],
+  "calculator": [
+    {
+      "input": "500",
+      "values": [
+        "500",
+        "≈71,4",
+        "≈35,7"
+      ]
+    },
+    {
+      "input": "70",
+      "values": [
+        "70",
+        "10",
+        "5"
+      ]
+    },
+    {
+      "input": "0,1",
+      "values": [
+        "0,1",
+        "<0,1",
+        "<0,1"
+      ]
+    },
+    {
+      "input": "123.4",
+      "values": [
+        "123,4",
+        "≈17,6",
+        "≈8,8"
+      ]
+    },
+    {
+      "input": "2000",
+      "values": [
+        "2 000",
+        "≈285,7",
+        "≈142,9"
+      ]
+    }
+  ],
+  "tabs": "All 5 tabs, ArrowRight, Home, End and visible panel passed",
+  "form": "Required fields, email, negative headcount, valid submit and explicit demo status passed; no POST",
+  "videos": [
+    {
+      "src": "assets/mastitis-01.mp4",
+      "width": 478,
+      "height": 850,
+      "fit": "contain"
+    },
+    {
+      "src": "assets/mastitis-02.mp4",
+      "width": 478,
+      "height": 850,
+      "fit": "contain"
+    },
+    {
+      "src": "assets/calves-01.mp4",
+      "width": 484,
+      "height": 848,
+      "fit": "contain"
+    }
+  ],
+  "consoleErrors": []
+}
