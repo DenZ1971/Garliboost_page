@@ -234,3 +234,20 @@ section.content{padding:46px 0}.section-head{gap:36px;margin-bottom:24px}.conten
  .mastitis-cases .case-metric{flex-wrap:wrap;gap:8px 16px}
  .mastitis-cases .case-metric p{flex:1 1 130px}
 }
+
+/* Keep the two situation links aligned while their columns share a row. */
+@media(min-width:601px){
+ #situations .benefit-grid article:nth-child(-n+2){display:flex;flex-direction:column;align-items:flex-start}
+ #situations .benefit-grid article:nth-child(-n+2) .text-link{margin-top:auto}
+}
+
+/* The divider belongs to the full content width, not the text measure. */
+#advantages>.accent-line{max-width:none}
+
+/* Give tablet evidence labels room without reducing their type size. */
+@media(min-width:601px) and (max-width:840px){
+ .clinical-metrics{grid-template-columns:repeat(6,minmax(0,1fr))}
+ .clinical-metrics>div:nth-child(-n+3){grid-column:span 2}
+ .clinical-metrics>div:nth-child(n+4){grid-column:span 3}
+ .clinical-metrics>div:nth-child(3){border-right:0}
+}
