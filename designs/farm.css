@@ -208,3 +208,29 @@ section.content{padding:46px 0}.section-head{gap:36px;margin-bottom:24px}.conten
  #about .about-benefits p{grid-column:2}
  #about .about-statement{font-size:21px;margin-top:22px}
 }
+
+/* Review GB-07 / GB-10: align case actions and let media shrink with the grid. */
+.mastitis-cases .video-feature,.mastitis-cases .video-stage{min-width:0}
+.mastitis-cases .video-stage video{max-width:100%}
+@media(min-width:601px){
+ .mastitis-cases .video-description{display:flex;flex-direction:column;align-items:flex-start;flex:1}
+ .mastitis-cases .case-metric{margin-top:0}
+ .mastitis-cases .video-description .btn{margin-top:auto}
+}
+/* GB-02 / GB-05: below 900px the two-column content becomes too narrow. */
+@media(min-width:601px) and (max-width:900px){
+ .application-grid,.calf-composition,#about .section-head{grid-template-columns:minmax(0,1fr)}
+ .dose-results>div>span:first-child,.dose-results output{grid-column:auto}
+ .calf-video .video-feature{grid-template-columns:220px minmax(0,1fr)}
+}
+/* GB-03: population first, then observation times, within one evidence strip. */
+@media(max-width:600px){
+ .clinical-metrics>div:nth-child(-n+3){display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;grid-column:1/-1;gap:12px;border-right:0}
+ .clinical-metrics span{overflow-wrap:normal;hyphens:none}
+ .clinical-metrics b{white-space:nowrap}
+}
+@media(max-width:360px){
+ .clinical-metrics>div:nth-child(n+4){grid-column:1/-1;border-right:0}
+ .mastitis-cases .case-metric{flex-wrap:wrap;gap:8px 16px}
+ .mastitis-cases .case-metric p{flex:1 1 130px}
+}

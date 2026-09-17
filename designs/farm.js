@@ -104,16 +104,29 @@ function closeMenu(returnFocus = false) {
   primaryNav.classList.remove('is-open');
   menuToggle.setAttribute('aria-expanded', 'false');
   menuToggle.setAttribute('aria-label', 'Открыть меню');
-  if (returnFocus) menuToggle.focus();
+  if (returnFocus) menuToggle.focus({ preventScroll: true });
 }
 menuToggle.addEventListener('click', () => {
   const open = menuToggle.getAttribute('aria-expanded') !== 'true';
   primaryNav.classList.toggle('is-open', open);
   menuToggle.setAttribute('aria-expanded', String(open));
   menuToggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+  if (open) primaryNav.querySelector('a').focus({ preventScroll: true });
+  else menuToggle.focus({ preventScroll: true });
 });
-primaryNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => closeMenu()));
-addEventListener('hashchange', () => closeMenu());
+primaryNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+  if (mobileNavQuery.matches) {
+    closeMenu();
+    // Restore focus after the anchor's default navigation, without undoing its scroll.
+    requestAnimationFrame(() => menuToggle.focus({ preventScroll: true }));
+  }
+}));
+addEventListener('hashchange', () => {
+  if (primaryNav.classList.contains('is-open')) closeMenu(true);
+});
 addEventListener('keydown', event => { if (event.key === 'Escape' && primaryNav.classList.contains('is-open')) closeMenu(true); });
 document.addEventListener('click', event => { if (!event.target.closest('header')) closeMenu(); });
+menuToggle.closest('header').addEventListener('focusout', event => {
+  if (!event.currentTarget.contains(event.relatedTarget)) closeMenu();
+});
 mobileNavQuery.addEventListener('change', () => closeMenu());
