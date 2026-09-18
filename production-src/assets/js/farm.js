@@ -76,10 +76,31 @@ document.getElementById('materials-link').addEventListener('click', () => {
 });
 if (location.hash === '#materials') document.getElementById('materials').open = true;
 
-document.getElementById('farm-form').addEventListener('submit', event => {
+const farmForm = document.getElementById('farm-form');
+const formStatus = document.getElementById('form-status');
+const formSubmit = farmForm.querySelector('[type="submit"]');
+let formSubmitting = false;
+farmForm.addEventListener('submit', async event => {
   event.preventDefault();
-  document.getElementById('form-status').textContent =
-    'Отправка формы пока недоступна. Пожалуйста, свяжитесь с нами позже.';
+  if (formSubmitting || !farmForm.reportValidity()) return;
+  formSubmitting = true;
+  formSubmit.disabled = true;
+  formStatus.textContent = farmForm.dataset.formSubmitting;
+  try {
+    const response = await fetch(farmForm.action, {
+      method: 'POST',
+      body: new FormData(farmForm),
+      headers: { Accept: 'application/json' }
+    });
+    if (!response.ok) throw new Error('Formspree submission failed');
+    farmForm.reset();
+    formStatus.textContent = farmForm.dataset.formSuccess;
+  } catch {
+    formStatus.textContent = farmForm.dataset.formError;
+  } finally {
+    formSubmitting = false;
+    formSubmit.disabled = false;
+  }
 });
 
 // Native WebVTT tracks stay switchable, including in fullscreen.
