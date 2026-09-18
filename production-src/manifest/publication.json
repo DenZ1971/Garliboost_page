@@ -1,0 +1,16 @@
+{
+  "published_locales": [
+    "ru"
+  ],
+  "routes": {
+    "ru": "ru",
+    "sk": "sk",
+    "en": "en",
+    "de": "de",
+    "hu": "hu",
+    "cs": "cz",
+    "pl": "pl",
+    "sr": "sr"
+  },
+  "domain": null
+}
