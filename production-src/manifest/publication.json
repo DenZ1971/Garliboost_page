@@ -1,6 +1,6 @@
 {
   "published_locales": [
-    "ru"
+    "ru", "en", "sk"
   ],
   "routes": {
     "ru": "ru",
@@ -12,5 +12,12 @@
     "pl": "pl",
     "sr": "sr"
   },
-  "domain": null
+  "domain": "https://garliboost.com",
+  "default_locale": "sk",
+  "og_locales": {
+    "ru": "ru_RU",
+    "en": "en_GB",
+    "sk": "sk_SK"
+  },
+  "social_image": "/assets/images/farm-hires.jpg"
 }

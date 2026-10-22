@@ -10,28 +10,31 @@ function parseWeight(raw) {
 }
 
 function formatTenths(value) {
-  return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 }).format(value / 10);
+  return new Intl.NumberFormat(document.documentElement.lang || 'en', {
+    maximumFractionDigits: 1
+  }).format(value / 10);
 }
 
 function dividedDose(tenths, divisor) {
-  if (tenths < divisor) return '<0,1';
+  if (tenths < divisor) return '<' + formatTenths(1);
   const rounded = Math.floor((tenths * 2 + divisor) / (2 * divisor));
   return (tenths % divisor ? '≈' : '') + formatTenths(rounded);
 }
 
 const weight = document.getElementById('weight');
-function updateDose() {
-  const tenths = parseWeight(weight.value);
-  const valid = tenths !== null;
-  weight.setAttribute('aria-invalid', String(!valid));
-  document.getElementById('weight-error').textContent = valid ? '' :
-    'Введите массу от 0,1 до 2 000 кг, не более одного знака после запятой.';
-  document.getElementById('course').textContent = valid ? formatTenths(tenths) : '—';
-  document.getElementById('daily').textContent = valid ? dividedDose(tenths, 7) : '—';
-  document.getElementById('single').textContent = valid ? dividedDose(tenths, 14) : '—';
+if (weight) {
+  function updateDose() {
+    const tenths = parseWeight(weight.value);
+    const valid = tenths !== null;
+    weight.setAttribute('aria-invalid', String(!valid));
+    document.getElementById('weight-error').textContent = valid ? '' : weight.dataset.invalidMessage;
+    document.getElementById('course').textContent = valid ? formatTenths(tenths) : '—';
+    document.getElementById('daily').textContent = valid ? dividedDose(tenths, 7) : '—';
+    document.getElementById('single').textContent = valid ? dividedDose(tenths, 14) : '—';
+  }
+  weight.addEventListener('input', updateDose);
+  updateDose();
 }
-weight.addEventListener('input', updateDose);
-updateDose();
 
 const tabs = [...document.querySelectorAll('[role="tab"]')];
 function activateTab(tab) {
@@ -71,37 +74,74 @@ document.querySelectorAll('video').forEach(video => video.addEventListener('play
   document.querySelectorAll('video').forEach(other => { if (other !== video) other.pause(); });
 }));
 
-document.getElementById('materials-link').addEventListener('click', () => {
-  document.getElementById('materials').open = true;
-});
-if (location.hash === '#materials') document.getElementById('materials').open = true;
+const materialsLink = document.getElementById('materials-link');
+const materials = document.getElementById('materials');
+if (materialsLink && materials) {
+  materialsLink.addEventListener('click', () => { materials.open = true; });
+  if (location.hash === '#materials') materials.open = true;
+}
 
-const farmForm = document.getElementById('farm-form');
-const formStatus = document.getElementById('form-status');
-const formSubmit = farmForm.querySelector('[type="submit"]');
-let formSubmitting = false;
-farmForm.addEventListener('submit', async event => {
+const languageMenu = document.querySelector('[data-language-menu]');
+const languageMenuToggle = languageMenu.querySelector('.language-menu__toggle');
+const languageMenuList = languageMenu.querySelector('.language-menu__list');
+const languageMenuLinks = [...languageMenuList.querySelectorAll('a')];
+function setLanguageMenuOpen(open, returnFocus = false) {
+  languageMenuToggle.setAttribute('aria-expanded', String(open));
+  languageMenuList.hidden = !open;
+  if (returnFocus) languageMenuToggle.focus();
+}
+languageMenuToggle.addEventListener('click', () => {
+  setLanguageMenuOpen(languageMenuToggle.getAttribute('aria-expanded') !== 'true');
+});
+languageMenuToggle.addEventListener('keydown', event => {
+  if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
   event.preventDefault();
-  if (formSubmitting || !farmForm.reportValidity()) return;
-  formSubmitting = true;
-  formSubmit.disabled = true;
-  formStatus.textContent = farmForm.dataset.formSubmitting;
-  try {
-    const response = await fetch(farmForm.action, {
-      method: 'POST',
-      body: new FormData(farmForm),
-      headers: { Accept: 'application/json' }
-    });
-    if (!response.ok) throw new Error('Formspree submission failed');
-    farmForm.reset();
-    formStatus.textContent = farmForm.dataset.formSuccess;
-  } catch {
-    formStatus.textContent = farmForm.dataset.formError;
-  } finally {
-    formSubmitting = false;
-    formSubmit.disabled = false;
+  setLanguageMenuOpen(true);
+  const target = event.key === 'ArrowDown' ?
+    languageMenuLinks[0] : languageMenuLinks[languageMenuLinks.length - 1];
+  target?.focus();
+});
+languageMenu.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !languageMenuList.hidden) {
+    event.preventDefault();
+    setLanguageMenuOpen(false, true);
   }
 });
+languageMenu.addEventListener('focusout', event => {
+  if (!languageMenu.contains(event.relatedTarget)) setLanguageMenuOpen(false);
+});
+document.addEventListener('click', event => {
+  if (!event.target.closest('[data-language-menu]')) setLanguageMenuOpen(false);
+});
+
+const farmForm = document.getElementById('farm-form');
+if (farmForm) {
+  const formStatus = document.getElementById('form-status');
+  const formSubmit = farmForm.querySelector('[type="submit"]');
+  let formSubmitting = false;
+  farmForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (formSubmitting || !farmForm.reportValidity()) return;
+    formSubmitting = true;
+    formSubmit.disabled = true;
+    formStatus.textContent = farmForm.dataset.formSubmitting;
+    try {
+      const response = await fetch(farmForm.action, {
+        method: 'POST',
+        body: new FormData(farmForm),
+        headers: { Accept: 'application/json' }
+      });
+      if (!response.ok) throw new Error('Formspree submission failed');
+      farmForm.reset();
+      formStatus.textContent = farmForm.dataset.formSuccess;
+    } catch {
+      formStatus.textContent = farmForm.dataset.formError;
+    } finally {
+      formSubmitting = false;
+      formSubmit.disabled = false;
+    }
+  });
+}
 
 // Native WebVTT tracks stay switchable, including in fullscreen.
 document.querySelectorAll('.caption-toggle').forEach(toggle => {
@@ -120,14 +160,14 @@ const mobileNavQuery = matchMedia('(max-width: 1050px)');
 function closeMenu(returnFocus = false) {
   primaryNav.classList.remove('is-open');
   menuToggle.setAttribute('aria-expanded', 'false');
-  menuToggle.setAttribute('aria-label', 'Открыть меню');
+  menuToggle.setAttribute('aria-label', menuToggle.dataset.labelOpen);
   if (returnFocus) menuToggle.focus({ preventScroll: true });
 }
 menuToggle.addEventListener('click', () => {
   const open = menuToggle.getAttribute('aria-expanded') !== 'true';
   primaryNav.classList.toggle('is-open', open);
   menuToggle.setAttribute('aria-expanded', String(open));
-  menuToggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+  menuToggle.setAttribute('aria-label', open ? menuToggle.dataset.labelClose : menuToggle.dataset.labelOpen);
   if (open) primaryNav.querySelector('a').focus({ preventScroll: true });
   else menuToggle.focus({ preventScroll: true });
 });
